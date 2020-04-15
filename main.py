@@ -28,10 +28,10 @@ if platform.system() == 'Linux':
     def install(package):
         subprocess.check_call([sys.executable, "-m", "pip", "install", package])
     install('install/pycocotools-2.0.0-cp36-cp36m-linux_x86_64.whl')
-    # install('install/pytoan-0.6.4-py3-none-any.whl')
-    # install('install/imgaug-0.2.6-py3-none-any.whl')
-    # install('install/opencv_python_headless-4.2.0.32-cp36-cp36m-manylinux1_x86_64.whl')
-    # install('install/albumentations-0.4.5-py3-none-any.whl')
+    install('install/pytoan-0.6.4-py3-none-any.whl')
+    install('install/imgaug-0.2.6-py3-none-any.whl')
+    install('install/opencv_python_headless-4.2.0.32-cp36-cp36m-manylinux1_x86_64.whl')
+    install('install/albumentations-0.4.5-py3-none-any.whl')
 
 from tqdm import tqdm
 import argparse
