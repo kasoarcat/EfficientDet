@@ -6,7 +6,7 @@ NUM_COCO_DATASET_TRAIN = 2000
 NUM_COCO_DATASET_VAL = 200
 
 IMAGE_SIZE = 512
-NUM_EPOCH = 20
+NUM_EPOCH = 10
 BATCH_SIZE = 2
 WORKS = 2
 LEARNING_RATE = 1e-4
@@ -75,7 +75,7 @@ parser.add_argument('--network', default=NETWORK, type=str, help='efficientdet-[
 parser.add_argument('--resume', default=None, type=str, help='Checkpoint state_dict file to resume training from')
 parser.add_argument('--num_epoch', default=NUM_EPOCH, type=int, help='Num epoch for training')
 parser.add_argument('--batch_size', default=BATCH_SIZE, type=int, help='Batch size for training')
-parser.add_argument('--num_class', default=3, type=int, help='Number of class used in model')
+parser.add_argument('--num_class', default=80, type=int, help='Number of class used in model')
 parser.add_argument('--device', default=[0,1], type=list, help='Use CUDA to train model')
 parser.add_argument('--grad_accumulation_steps', default=1, type=int, help='Number of gradient accumulation steps')
 parser.add_argument('--lr', '--learning-rate', default=LEARNING_RATE, type=float, help='initial learning rate')

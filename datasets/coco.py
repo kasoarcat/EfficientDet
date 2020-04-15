@@ -165,9 +165,6 @@ class CocoDataset(Dataset):
         image = self.coco.loadImgs(self.image_ids[image_index])[0]
         return float(image['width']) / float(image['height'])
 
-    def num_classes(self):
-        return 80
-
 if __name__ == '__main__':
     from augmentation import get_augumentation
     dataset = CocoDataset(root_dir='/root/data/coco', set_name='trainval35k',
