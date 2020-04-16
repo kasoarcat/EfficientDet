@@ -321,18 +321,18 @@ def evaluate_coco(dataset, model, threshold=0.05):
             json_path = '/kaggle/working/' + json_path
         json.dump(results, open(json_path, 'w'), indent=4)
 
-        # # load results in COCO evaluation tool
-        # coco_true = dataset.coco
-        # coco_pred = coco_true.loadRes('{}_bbox_results.json'.format(dataset.set_name))
+        # load results in COCO evaluation tool
+        coco_true = dataset.coco
+        coco_pred = coco_true.loadRes('{}_bbox_results.json'.format(dataset.set_name))
 
-        # # run COCO evaluation
-        # coco_eval = COCOeval(coco_true, coco_pred, 'bbox')
-        # coco_eval.params.imgIds = image_ids
-        # coco_eval.evaluate()
-        # coco_eval.accumulate()
-        # coco_eval.summarize()
+        # run COCO evaluation
+        coco_eval = COCOeval(coco_true, coco_pred, 'bbox')
+        coco_eval.params.imgIds = image_ids
+        coco_eval.evaluate()
+        coco_eval.accumulate()
+        coco_eval.summarize()
 
-        # model.train()
+        model.train()
         return
 
 
