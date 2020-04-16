@@ -69,7 +69,7 @@ from eval import evaluate, evaluate_coco
 import json
 
 parser = argparse.ArgumentParser(description='PyTorch ImageNet Training')
-parser.add_argument('--dataset', default='all', choices=['limit', 'h5', 'all'], type=str, help='limit, h5, all')
+parser.add_argument('--dataset', default='show', choices=['limit', 'h5', 'show'], type=str, help='limit, h5, show')
 parser.add_argument('--dataset_root', default='/mnt/marathon', help='Dataset root directory path')
 parser.add_argument('--network', default=NETWORK, type=str, help='efficientdet-[d0, d1, ..]')
 parser.add_argument('--resume', default=None, type=str, help='Checkpoint state_dict file to resume training from')
