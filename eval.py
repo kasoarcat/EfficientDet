@@ -256,7 +256,7 @@ def evaluate(
     return np.mean(avg_mAP), average_precisions
 
 
-def evaluate_coco(dataset, model, threshold=0.05):
+def evaluate_coco(dataset, model, _type, threshold=0.05):
     model.eval()
 
     with torch.no_grad():
@@ -300,39 +300,40 @@ def evaluate_coco(dataset, model, threshold=0.05):
                         'score': float(score),
                         'bbox': box.tolist(),
                     }
-                    
+
                     # append detection to results
                     results.append(image_result)
-                    
+
             # append image to list of processed images
             image_ids.append(dataset.image_ids[index])
-            
+
             # print progress
             print('{}/{}'.format(index, len(dataset)), end='\r')
-            
+
         if not len(results):
             return
-            
+
         # write output
         json_path = '{}_bbox_results.json'.format(dataset.set_name)
         USE_KAGGLE = True if os.environ.get('KAGGLE_KERNEL_RUN_TYPE', False) else False
         if USE_KAGGLE:
             json_path = '/kaggle/working/' + json_path
         json.dump(results, open(json_path, 'w'), indent=4)
-        
-        # load results in COCO evaluation tool
-        coco_true = dataset.coco
-        coco_pred = coco_true.loadRes(json_path)
-        
-        # run COCO evaluation
-        coco_eval = COCOeval(coco_true, coco_pred, 'bbox')
-        coco_eval.params.imgIds = image_ids
-        coco_eval.evaluate()
-        coco_eval.accumulate()
-        coco_eval.summarize()
-        model.train()
-        
-        
+
+        if _type != 'show':
+            # load results in COCO evaluation tool
+            coco_true = dataset.coco
+            coco_pred = coco_true.loadRes(json_path)
+
+            # run COCO evaluation
+            coco_eval = COCOeval(coco_true, coco_pred, 'bbox')
+            coco_eval.params.imgIds = image_ids
+            coco_eval.evaluate()
+            coco_eval.accumulate()
+            coco_eval.summarize()
+            model.train()
+
+
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(
         description='EfficientDet Training With Pytorch')

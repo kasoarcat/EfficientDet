@@ -150,7 +150,7 @@ def test(dataset, model, epoch, args):
     model.eval()
     model.is_training = False
     with torch.no_grad():
-        evaluate_coco(dataset, model)
+        evaluate_coco(dataset, model, args.dataset)
 
 
 def main_worker(gpu, ngpus_per_node, args):
