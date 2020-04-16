@@ -7,7 +7,7 @@ NUM_COCO_DATASET_VAL = 200
 
 IMAGE_SIZE = 512
 NUM_EPOCH = 10
-BATCH_SIZE = 2
+BATCH_SIZE = 1
 WORKS = 2
 LEARNING_RATE = 1e-4
 
@@ -27,7 +27,7 @@ if platform.system() == 'Linux':
 
     def install(package):
         subprocess.check_call([sys.executable, "-m", "pip", "install", package])
-    install('install/pycocotools-2.0.0-cp36-cp36m-linux_x86_64.whl')
+    install('install/pycocotools-2.0-cp36-cp36m-linux_x86_64.whl')
     install('install/pytoan-0.6.4-py3-none-any.whl')
     install('install/imgaug-0.2.6-py3-none-any.whl')
     install('install/opencv_python_headless-4.2.0.32-cp36-cp36m-manylinux1_x86_64.whl')
@@ -75,7 +75,7 @@ parser.add_argument('--network', default=NETWORK, type=str, help='efficientdet-[
 parser.add_argument('--resume', default=None, type=str, help='Checkpoint state_dict file to resume training from')
 parser.add_argument('--num_epoch', default=NUM_EPOCH, type=int, help='Num epoch for training')
 parser.add_argument('--batch_size', default=BATCH_SIZE, type=int, help='Batch size for training')
-parser.add_argument('--num_class', default=80, type=int, help='Number of class used in model')
+parser.add_argument('--num_class', default=3, type=int, help='Number of class used in model')
 parser.add_argument('--device', default=[0,1], type=list, help='Use CUDA to train model')
 parser.add_argument('--grad_accumulation_steps', default=1, type=int, help='Number of gradient accumulation steps')
 parser.add_argument('--lr', '--learning-rate', default=LEARNING_RATE, type=float, help='initial learning rate')
@@ -101,6 +101,7 @@ parser.add_argument(
     'multi node data parallel training')
 
 iteration = 1
+
 
 def train(train_loader, model, scheduler, optimizer, epoch, args, epoch_loss_file, iteration_loss_file, steps_pre_epoch):
     global iteration
@@ -142,6 +143,7 @@ def train(train_loader, model, scheduler, optimizer, epoch, args, epoch_loss_fil
     epoch_loss_file.write('{},{:1.5f}\n'.format(epoch+1, mean_total_loss))
     epoch_loss_file.flush()
 
+
 def test(dataset, model, epoch, args):
     print("{} epoch: \t start validation....".format(epoch))
     model = model.module
@@ -149,6 +151,7 @@ def test(dataset, model, epoch, args):
     model.is_training = False
     with torch.no_grad():
         evaluate_coco(dataset, model)
+
 
 def main_worker(gpu, ngpus_per_node, args):
     args.gpu = gpu
@@ -299,6 +302,7 @@ def main_worker(gpu, ngpus_per_node, args):
             train(train_loader, model, scheduler, optimizer, epoch, args, epoch_loss_file, iteration_loss_file, steps_pre_epoch)
             test(valid_dataset, model, epoch, args)
 
+
 def main():
     args = parser.parse_args()
     USE_KAGGLE = True if os.environ.get('KAGGLE_KERNEL_RUN_TYPE', False) else False
@@ -341,6 +345,7 @@ def main():
         main_worker(args.gpu, ngpus_per_node, args)
     return args
 
+
 def write_result_csv(args):
     test_file = '{}/test/test.json'.format(args.dataset_root)
     with open(test_file) as f:
@@ -363,6 +368,7 @@ def write_result_csv(args):
             x,y,w,h = anno['bbox']
             f_out.write(",{},{},{},{},{},{:.02f}".format(anno['category_id'], x,y,w,h, anno['score']))
             f_out.write('\n')
+
 
 if __name__ == "__main__":
     args = main()
