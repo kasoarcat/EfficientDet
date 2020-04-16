@@ -320,10 +320,10 @@ def evaluate_coco(dataset, model, threshold=0.05):
         if USE_KAGGLE:
             json_path = '/kaggle/working/' + json_path
         json.dump(results, open(json_path, 'w'), indent=4)
-
+        
         # load results in COCO evaluation tool
         coco_true = dataset.coco
-        coco_pred = coco_true.loadRes('{}_bbox_results.json'.format(dataset.set_name))
+        coco_pred = coco_true.loadRes(JSON_PATH)
 
         # run COCO evaluation
         coco_eval = COCOeval(coco_true, coco_pred, 'bbox')
@@ -331,7 +331,6 @@ def evaluate_coco(dataset, model, threshold=0.05):
         coco_eval.evaluate()
         coco_eval.accumulate()
         coco_eval.summarize()
-
         model.train()
         return
 

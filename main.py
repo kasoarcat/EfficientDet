@@ -76,7 +76,7 @@ parser.add_argument('--resume', default=None, type=str, help='Checkpoint state_d
 parser.add_argument('--num_epoch', default=NUM_EPOCH, type=int, help='Num epoch for training')
 parser.add_argument('--batch_size', default=BATCH_SIZE, type=int, help='Batch size for training')
 parser.add_argument('--num_class', default=3, type=int, help='Number of class used in model')
-parser.add_argument('--device', default=[0,1], type=list, help='Use CUDA to train model')
+parser.add_argument('--device', default=[0], type=list, help='Use CUDA to train model')
 parser.add_argument('--grad_accumulation_steps', default=1, type=int, help='Number of gradient accumulation steps')
 parser.add_argument('--lr', '--learning-rate', default=LEARNING_RATE, type=float, help='initial learning rate')
 parser.add_argument('--image_size', help='image size', type=int, default=IMAGE_SIZE)
