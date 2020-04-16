@@ -301,19 +301,19 @@ def evaluate_coco(dataset, model, threshold=0.05):
                         'score': float(score),
                         'bbox': box.tolist(),
                     }
-
+                    
                     # append detection to results
                     results.append(image_result)
-
+                    
             # append image to list of processed images
             image_ids.append(dataset.image_ids[index])
-
+            
             # print progress
             print('{}/{}'.format(index, len(dataset)), end='\r')
 
         if not len(results):
             return
-
+            
         # write output
         json_path = '{}_bbox_results.json'.format(dataset.set_name)
         USE_KAGGLE = True if os.environ.get('KAGGLE_KERNEL_RUN_TYPE', False) else False
@@ -324,7 +324,7 @@ def evaluate_coco(dataset, model, threshold=0.05):
         # load results in COCO evaluation tool
         coco_true = dataset.coco
         coco_pred = coco_true.loadRes(JSON_PATH)
-
+        
         # run COCO evaluation
         coco_eval = COCOeval(coco_true, coco_pred, 'bbox')
         coco_eval.params.imgIds = image_ids
