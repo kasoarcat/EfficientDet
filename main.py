@@ -244,9 +244,12 @@ def main_worker(gpu, ngpus_per_node, args):
                          D_bifpn=EFFICIENTDET[args.network]['D_bifpn'],
                          D_class=EFFICIENTDET[args.network]['D_class']
                          )
+    
     if(args.resume is not None):
         model.load_state_dict(checkpoint['state_dict'])
+    
     del checkpoint
+
     if args.distributed:
         # For multiprocessing distributed, DistributedDataParallel constructor
         # should always set the single device scope, otherwise,
