@@ -319,11 +319,11 @@ def evaluate_coco(dataset, model, threshold=0.05):
         if USE_KAGGLE:
             json_path = '/kaggle/working/' + json_path
         json.dump(results, open(json_path, 'w'), indent=4)
-
+        
         # load results in COCO evaluation tool
         coco_true = dataset.coco
-        coco_pred = coco_true.loadRes(JSON_PATH)
-
+        coco_pred = coco_true.loadRes(json_path)
+        
         # run COCO evaluation
         coco_eval = COCOeval(coco_true, coco_pred, 'bbox')
         coco_eval.params.imgIds = image_ids
@@ -332,8 +332,8 @@ def evaluate_coco(dataset, model, threshold=0.05):
         coco_eval.summarize()
         model.train()
         return
-
-
+        
+        
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(
         description='EfficientDet Training With Pytorch')
