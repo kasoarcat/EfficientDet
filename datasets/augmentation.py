@@ -5,8 +5,6 @@ import numpy as np
 import cv2
 
 def get_augumentation(phase, width=512, height=512, min_area=0., min_visibility=0.):
-    print('get_augumentation')
-    
     list_transforms = []
     if phase == 'train':
         list_transforms.extend([
@@ -41,7 +39,7 @@ def get_augumentation(phase, width=512, height=512, min_area=0., min_visibility=
     ])
     if(phase == 'test'):
         return albu.Compose(list_transforms)
-    return albu.Compose(list_transforms, bbox_params=albu.BboxParams(format='pascal_voc', min_area=min_area,
+    return albu.Compose(list_transforms, bbox_params=albu.BboxParams(format='coco', min_area=min_area,
                                                                      min_visibility=min_visibility, label_fields=['category_id']))
 
 

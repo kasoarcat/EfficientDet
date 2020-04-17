@@ -140,13 +140,13 @@ def train(train_loader, model, scheduler, optimizer, epoch, args, epoch_loss_fil
         iteration += 1
     scheduler.step(np.mean(total_loss))
     mean_total_loss = np.mean(total_loss)
-    print('time: {:.0f} | loss: {:1.5f}'.format(time.time() - start, mean_total_loss))
+    print('time: {:.0f}'.format(time.time() - start))
     epoch_loss_file.write('{},{:1.5f}\n'.format(epoch+1, mean_total_loss))
     epoch_loss_file.flush()
 
 
 def test(dataset, model, epoch, args, coco_eval_file):
-    print("{} epoch: \t start validation....".format(epoch))
+    # print("{} epoch: \t start validation....".format(epoch+1))
     model = model.module
     model.eval()
     model.is_training = False
