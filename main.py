@@ -191,7 +191,8 @@ def main_worker(gpu, ngpus_per_node, args):
         valid_dataset = H5CoCoDataset('{}/test.hdf5'.format(args.dataset_root), 'test')
     else:
         train_dataset = CocoDataset(args.dataset_root, set_name='train_small',
-                                transform=transforms.Compose([Normalizer(), Augmenter(), Resizer(args.image_size)]),
+                                # transform=transforms.Compose([Normalizer(), Augmenter(), Resizer(args.image_size)]),
+                                transform=get_augumentation('train')
                                 limit_len=args.limit[0])
         valid_dataset = CocoDataset(args.dataset_root, set_name='test',
                               transform=transforms.Compose([Normalizer(), Resizer(args.image_size)]), limit_len=args.limit[1])
