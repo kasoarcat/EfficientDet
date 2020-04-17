@@ -144,13 +144,13 @@ def train(train_loader, model, scheduler, optimizer, epoch, args, epoch_loss_fil
     epoch_loss_file.flush()
 
 
-def test(dataset, model, epoch, args):
+def test(dataset, model, epoch, args, coco_eval_file):
     print("{} epoch: \t start validation....".format(epoch))
     model = model.module
     model.eval()
     model.is_training = False
     with torch.no_grad():
-        evaluate_coco(dataset, model, args.dataset)
+        evaluate_coco(dataset, model, args.dataset, coco_eval_file)
 
 
 def main_worker(gpu, ngpus_per_node, args):
@@ -298,12 +298,15 @@ def main_worker(gpu, ngpus_per_node, args):
         iteration_loss_path = '/kaggle/working/' + iteration_loss_path
         epoch_loss_path = '/kaggle/working/' + epoch_loss_path
     
-    with open (epoch_loss_path, 'a+') as epoch_loss_file, open (iteration_loss_path, 'a+') as iteration_loss_file:
+    with open(epoch_loss_path, 'a+') as epoch_loss_file, open(iteration_loss_path, 'a+') as iteration_loss_file, \
+        open(eval_result_path, 'a+') as coco_eval_file:
+
         epoch_loss_file.write('epoch_num,mean_epoch_loss\n')
         iteration_loss_file.write('epoch_num,iteration,classification_loss,regression_loss,iteration_loss\n')
+        coco_eval_file.write('epoch_num,map50\n')
         for epoch in range(args.start_epoch, args.num_epoch):
             train(train_loader, model, scheduler, optimizer, epoch, args, epoch_loss_file, iteration_loss_file, steps_pre_epoch)
-            test(valid_dataset, model, epoch, args)
+            test(valid_dataset, model, epoch, args, coco_eval_file)
 
 
 def main():

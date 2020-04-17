@@ -256,7 +256,7 @@ def evaluate(
     return np.mean(avg_mAP), average_precisions
 
 
-def evaluate_coco(dataset, model, _type, threshold=0.05):
+def evaluate_coco(dataset, model, _type, coco_eval_file, threshold=0.05):
     model.eval()
 
     with torch.no_grad():
@@ -332,6 +332,7 @@ def evaluate_coco(dataset, model, _type, threshold=0.05):
             coco_eval.accumulate()
             coco_eval.summarize()
             model.train()
+            coco_eval_file.write('{},{:1.2f}\n'.format(epoch_num+1, coco_eval.stats))
 
 
 if __name__ == '__main__':
