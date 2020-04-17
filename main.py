@@ -91,7 +91,7 @@ parser.add_argument('--world-size', default=1, type=int, help='number of nodes f
 parser.add_argument('--rank', default=0, type=int, help='node rank for distributed training')
 parser.add_argument('--dist-url', default='env://', type=str, help='url used to set up distributed training')
 parser.add_argument('--dist-backend', default='nccl', type=str, help='distributed backend')
-parser.add_argument('--seed', default=24, type=int, help='seed for initializing training. ')
+parser.add_argument('--seed', default=None, type=int, help='seed for initializing training. ')
 parser.add_argument('--gpu', default=None, type=int, help='GPU id to use.')
 parser.add_argument(
     '--multiprocessing-distributed',
@@ -278,15 +278,15 @@ def main_worker(gpu, ngpus_per_node, args):
     scheduler = optim.lr_scheduler.ReduceLROnPlateau(optimizer, patience=3, factor=0.1, verbose=True)
     cudnn.benchmark = True
     
-    iteration_loss_path = "iteration_loss.csv"
+    iteration_loss_path = 'iteration_loss.csv'
     if os.path.isfile(iteration_loss_path):
         os.remove(iteration_loss_path)
     
-    epoch_loss_path = "epoch_loss.csv"
+    epoch_loss_path = 'epoch_loss.csv'
     if os.path.isfile(epoch_loss_path):
         os.remove(epoch_loss_path)
     
-    eval_result_path = "epoch_loss.csv"
+    eval_result_path = 'eval_result.csv'
     if os.path.isfile(eval_result_path):
         os.remove(eval_result_path)
 
