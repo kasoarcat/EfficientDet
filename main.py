@@ -79,6 +79,7 @@ parser.add_argument('--num_class', default=3, type=int, help='Number of class us
 parser.add_argument('--device', default=[0], type=list, help='Use CUDA to train model')
 parser.add_argument('--grad_accumulation_steps', default=1, type=int, help='Number of gradient accumulation steps')
 parser.add_argument('--lr', '--learning-rate', default=LEARNING_RATE, type=float, help='initial learning rate')
+parser.add_argument('--limit', help='limit', type=int, nargs=2, default=(0, 0))
 parser.add_argument('--image_size', help='image size', type=int, default=IMAGE_SIZE)
 parser.add_argument('--momentum', default=0.9, type=float, help='Momentum value for optim')
 parser.add_argument('--weight_decay', default=5e-4, type=float, help='Weight decay for SGD')
@@ -183,25 +184,19 @@ def main_worker(gpu, ngpus_per_node, args):
     print('workers:', args.workers)
     print('num_class:', args.num_class)
     print('save_folder:', args.save_folder)
+    print('limit:', args.limit)
 
-    if args.dataset == 'limit':
-        print('using limit dataset')
-        train_dataset = CocoDataset(args.dataset_root, set_name='train_small',
-                                transform=transforms.Compose([Normalizer(), Augmenter(), Resizer(args.image_size)]),
-                                limit_len=2000)
-        valid_dataset = CocoDataset(args.dataset_root, set_name='test',
-                              transform=transforms.Compose([Normalizer(), Resizer(args.image_size)]),
-                              limit_len=200)
-    elif args.dataset == 'h5':
+    if args.dataset == 'h5':
         print('using h5 dataset')
         train_dataset = H5CoCoDataset('{}/train_small.hdf5'.format(args.dataset_root), 'train_small')
         valid_dataset = H5CoCoDataset('{}/test.hdf5'.format(args.dataset_root), 'test')
     else:
         print('using all dataset')
         train_dataset = CocoDataset(args.dataset_root, set_name='train_small',
-                                transform=transforms.Compose([Normalizer(), Augmenter(), Resizer(args.image_size)]))
+                                transform=transforms.Compose([Normalizer(), Augmenter(), Resizer(args.image_size)]),
+                                limit_len=args.limit[0])
         valid_dataset = CocoDataset(args.dataset_root, set_name='test',
-                              transform=transforms.Compose([Normalizer(), Resizer(args.image_size)]))
+                              transform=transforms.Compose([Normalizer(), Resizer(args.image_size)]), limit_len=args.limit[1])
 
     print('train_dataset:', len(train_dataset))
     print('valid_dataset:', len(valid_dataset))
