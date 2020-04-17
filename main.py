@@ -151,7 +151,7 @@ def test(dataset, model, epoch, args, coco_eval_file):
     model.eval()
     model.is_training = False
     with torch.no_grad():
-        evaluate_coco(dataset, model, args.dataset, coco_eval_file)
+        evaluate_coco(dataset, model, args.dataset, epoch, coco_eval_file)
 
 
 def main_worker(gpu, ngpus_per_node, args):
@@ -187,11 +187,9 @@ def main_worker(gpu, ngpus_per_node, args):
     print('limit:', args.limit)
 
     if args.dataset == 'h5':
-        print('using h5 dataset')
         train_dataset = H5CoCoDataset('{}/train_small.hdf5'.format(args.dataset_root), 'train_small')
         valid_dataset = H5CoCoDataset('{}/test.hdf5'.format(args.dataset_root), 'test')
     else:
-        print('using all dataset')
         train_dataset = CocoDataset(args.dataset_root, set_name='train_small',
                                 transform=transforms.Compose([Normalizer(), Augmenter(), Resizer(args.image_size)]),
                                 limit_len=args.limit[0])
@@ -291,7 +289,7 @@ def main_worker(gpu, ngpus_per_node, args):
     eval_result_path = "epoch_loss.csv"
     if os.path.isfile(eval_result_path):
         os.remove(eval_result_path)
-    
+
     USE_KAGGLE = True if os.environ.get('KAGGLE_KERNEL_RUN_TYPE', False) else False
     if USE_KAGGLE:
         iteration_loss_path = '/kaggle/working/' + iteration_loss_path
