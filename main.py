@@ -76,10 +76,10 @@ parser.add_argument('--resume', default=None, type=str, help='Checkpoint state_d
 parser.add_argument('--num_epoch', default=NUM_EPOCH, type=int, help='Num epoch for training')
 parser.add_argument('--batch_size', default=BATCH_SIZE, type=int, help='Batch size for training')
 parser.add_argument('--num_class', default=3, type=int, help='Number of class used in model')
+parser.add_argument('--limit', help='limit', type=int, nargs=2, default=(0, 0))
 parser.add_argument('--device', default=[0], type=list, help='Use CUDA to train model')
 parser.add_argument('--grad_accumulation_steps', default=1, type=int, help='Number of gradient accumulation steps')
 parser.add_argument('--lr', '--learning-rate', default=LEARNING_RATE, type=float, help='initial learning rate')
-parser.add_argument('--limit', help='limit', type=int, nargs=2, default=(0, 0))
 parser.add_argument('--image_size', help='image size', type=int, default=IMAGE_SIZE)
 parser.add_argument('--momentum', default=0.9, type=float, help='Momentum value for optim')
 parser.add_argument('--weight_decay', default=5e-4, type=float, help='Weight decay for SGD')
@@ -287,11 +287,16 @@ def main_worker(gpu, ngpus_per_node, args):
     epoch_loss_path = "epoch_loss.csv"
     if os.path.isfile(epoch_loss_path):
         os.remove(epoch_loss_path)
-        
+    
+    eval_result_path = "epoch_loss.csv"
+    if os.path.isfile(eval_result_path):
+        os.remove(eval_result_path)
+    
     USE_KAGGLE = True if os.environ.get('KAGGLE_KERNEL_RUN_TYPE', False) else False
     if USE_KAGGLE:
         iteration_loss_path = '/kaggle/working/' + iteration_loss_path
         epoch_loss_path = '/kaggle/working/' + epoch_loss_path
+        eval_result_path = '/kaggle/working/' + eval_result_path
     
     with open(epoch_loss_path, 'a+') as epoch_loss_file, open(iteration_loss_path, 'a+') as iteration_loss_file, \
         open(eval_result_path, 'a+') as coco_eval_file:
