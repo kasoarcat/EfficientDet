@@ -2,12 +2,9 @@
 import os
 import platform
 
-NUM_COCO_DATASET_TRAIN = 2000
-NUM_COCO_DATASET_VAL = 200
-
 IMAGE_SIZE = 512
-NUM_EPOCH = 10
-BATCH_SIZE = 1
+NUM_EPOCH = 40
+BATCH_SIZE = 4
 WORKS = 2
 LEARNING_RATE = 1e-4
 
@@ -30,7 +27,6 @@ if platform.system() == 'Linux':
     install('install/pycocotools-2.0-cp36-cp36m-linux_x86_64.whl')
     install('install/pytoan-0.6.4-py3-none-any.whl')
     install('install/imgaug-0.2.6-py3-none-any.whl')
-    install('install/opencv_python_headless-4.2.0.32-cp36-cp36m-manylinux1_x86_64.whl')
     install('install/albumentations-0.4.5-py3-none-any.whl')
 
 from tqdm import tqdm
@@ -269,7 +265,7 @@ def main_worker(gpu, ngpus_per_node, args):
         torch.cuda.set_device(args.gpu)
         model = model.cuda(args.gpu)
     else:
-        model = model.cuda()
+        model = model.cpu()
         # print('Run with DataParallel ....')
         model = torch.nn.DataParallel(model).cuda()
 
