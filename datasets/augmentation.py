@@ -8,10 +8,8 @@ def get_augumentation(phase, width=512, height=512, min_area=0., min_visibility=
     list_transforms = []
     if phase == 'train':
         list_transforms.extend([
-            albu.augmentations.transforms.LongestMaxSize(
-                max_size=width, always_apply=True),
-            albu.PadIfNeeded(min_height=height, min_width=width,
-                             always_apply=True, border_mode=0, value=[0, 0, 0]),
+            albu.augmentations.transforms.LongestMaxSize(max_size=width, always_apply=True),
+            albu.PadIfNeeded(min_height=height, min_width=width, always_apply=True, border_mode=0, value=[0, 0, 0]),
             albu.augmentations.transforms.RandomResizedCrop(height=height, width=width, p=0.3),
             albu.augmentations.transforms.Flip(),
             albu.augmentations.transforms.Transpose(),
