@@ -12,10 +12,10 @@ LEARNING_RATE = 1e-4
 # NETWORK = 'efficientdet-d1'
 # NETWORK = 'efficientdet-d2'
 # NETWORK = 'efficientdet-d3'
-# NETWORK = 'efficientdet-d4'
+NETWORK = 'efficientdet-d4'
 # NETWORK = 'efficientdet-d5'
 # NETWORK = 'efficientdet-d6'
-NETWORK = 'efficientdet-d7'
+# NETWORK = 'efficientdet-d7'
 
 if platform.system() == 'Linux':
     import subprocess
