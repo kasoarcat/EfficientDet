@@ -59,7 +59,7 @@ from torch.utils.data import DataLoader
 
 from models.efficientdet import EfficientDet
 from models.losses import FocalLoss
-from datasets import VOCDetection, H5CoCoDataset, CocoDataset, get_augumentation, detection_collate, Resizer, Normalizer, Augmenter, collater
+from datasets import H5CoCoDataset, CocoDataset, get_augumentation, detection_collate, Resizer, Normalizer, Augmenter, collater
 from utils import EFFICIENTDET, get_state_dict
 from eval import evaluate, evaluate_coco
 import json
