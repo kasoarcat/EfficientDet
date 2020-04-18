@@ -10,7 +10,7 @@ from pycocotools.cocoeval import COCOeval
 import json
 
 from datasets import (Augmenter, CocoDataset, Normalizer,
-                      Resizer, VOCDetection, collater, detection_collate,
+                      Resizer, collater, detection_collate,
                       get_augumentation)
 from models.efficientdet import EfficientDet
 from utils import EFFICIENTDET, get_state_dict
