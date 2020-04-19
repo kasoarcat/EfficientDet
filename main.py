@@ -117,7 +117,17 @@ def adjust_learning_rate(optimizer, lr):
     for param_group in optimizer.param_groups:
         param_group['lr'] = lr
 
-        
+
+def lrfn(epoch):
+    if epoch < LR_RAMPUP_EPOCHS:
+        lr = (LR_MAX - LR_START) / LR_RAMPUP_EPOCHS * epoch + LR_START
+    elif epoch < LR_RAMPUP_EPOCHS + LR_SUSTAIN_EPOCHS:
+        lr = LR_MAX
+    else:
+        lr = (LR_MAX - LR_MIN) * LR_EXP_DECAY**(epoch - LR_RAMPUP_EPOCHS - LR_SUSTAIN_EPOCHS) + LR_MIN
+    return lr
+
+    
 def train(train_loader, model, scheduler, optimizer, epoch, args, epoch_loss_file, iteration_loss_file, steps_pre_epoch):
     global iteration
     # print("{} epoch: \t start training....".format(epoch))
