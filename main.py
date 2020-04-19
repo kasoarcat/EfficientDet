@@ -91,6 +91,7 @@ parser.add_argument('--device', default=[0], type=list, help='Use CUDA to train 
 parser.add_argument('--grad_accumulation_steps', default=1, type=int, help='Number of gradient accumulation steps')
 parser.add_argument('--lr_choice', default=LR_CHOICE, choices=['lr_scheduler', 'lr_fn'], type=str)
 parser.add_argument('--lr', '--learning-rate', default=LR, type=float, help='initial learning rate')
+parser.add_argument("--lr_fn", dest="lr_fn", action=StoreDictKeyPair, default=LR_FN)
 parser.add_argument('--image_size', help='image size', type=int, default=IMAGE_SIZE)
 parser.add_argument('--momentum', default=0.9, type=float, help='Momentum value for optim')
 parser.add_argument('--weight_decay', default=5e-4, type=float, help='Weight decay for SGD')
@@ -120,6 +121,15 @@ def adjust_learning_rate(optimizer, lr):
         param_group['lr'] = lr
 
 
+class StoreDictKeyPair(argparse.Action):
+    def __call__(self, parser, namespace, values, option_string=None):
+        my_dict = {}
+        for kv in values.split(","):
+            k,v = kv.split("=")
+            my_dict[k] = v
+        setattr(namespace, self.dest, my_dict)
+
+        
 def lrfn(epoch, lr_fn_dicts):
     if epoch < int(lr_fn_dicts['LR_RAMPUP_EPOCHS']):
         lr = (float(lr_fn_dicts['LR_MAX']) - float(lr_fn_dicts['LR_START'])) / int(lr_fn_dicts['LR_RAMPUP_EPOCHS']) * epoch + \
