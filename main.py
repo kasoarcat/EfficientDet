@@ -78,6 +78,16 @@ from utils import EFFICIENTDET, get_state_dict
 from eval import evaluate, evaluate_coco
 import json
 
+
+class StoreDictKeyPair(argparse.Action):
+    def __call__(self, parser, namespace, values, option_string=None):
+        my_dict = {}
+        for kv in values.split(","):
+            k,v = kv.split("=")
+            my_dict[k] = v
+        setattr(namespace, self.dest, my_dict)
+
+
 parser = argparse.ArgumentParser(description='PyTorch ImageNet Training')
 parser.add_argument('--dataset', default='show', choices=['limit', 'h5', 'show'], type=str, help='limit, h5, show')
 parser.add_argument('--dataset_root', default='/mnt/marathon', help='Dataset root directory path')
@@ -121,15 +131,6 @@ def adjust_learning_rate(optimizer, lr):
         param_group['lr'] = lr
 
 
-class StoreDictKeyPair(argparse.Action):
-    def __call__(self, parser, namespace, values, option_string=None):
-        my_dict = {}
-        for kv in values.split(","):
-            k,v = kv.split("=")
-            my_dict[k] = v
-        setattr(namespace, self.dest, my_dict)
-
-        
 def lrfn(epoch, lr_fn_dicts):
     if epoch < int(lr_fn_dicts['LR_RAMPUP_EPOCHS']):
         lr = (float(lr_fn_dicts['LR_MAX']) - float(lr_fn_dicts['LR_START'])) / int(lr_fn_dicts['LR_RAMPUP_EPOCHS']) * epoch + \
