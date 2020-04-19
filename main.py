@@ -180,7 +180,7 @@ def train(train_loader, model, scheduler, optimizer, epoch, args, epoch_loss_fil
         iteration += 1
     
     if args.lr_choice == 'lr_fn':
-        lr_now = lrfn(epoch+1)
+        lr_now = lrfn(epoch+1, args.lr_fn)
         adjust_learning_rate(optimizer, lr_now)
     elif args.lr_choice == 'lr_scheduler':
         scheduler.step(np.mean(total_loss))
