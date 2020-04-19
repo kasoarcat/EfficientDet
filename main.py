@@ -13,12 +13,14 @@ PATIENCE = 3
 FACTOR = 0.1
 
 LR_CHOICE = 'lr_fn'
-LR_START = 1e-5
-LR_MAX = 1e-4
-LR_MIN = 1e-5
-LR_RAMPUP_EPOCHS = 5
-LR_SUSTAIN_EPOCHS = 0
-LR_EXP_DECAY = .8
+LR_FN = {
+    'LR_START': '1e-5',
+    'LR_MAX': '1e-4',
+    'LR_MIN': '1e-5',
+    'LR_RAMPUP_EPOCHS': '5',
+    'LR_SUSTAIN_EPOCHS': '10',
+    'LR_EXP_DECAY': '.8'
+}
 
 # NETWORK = 'efficientdet-d0'
 # NETWORK = 'efficientdet-d1'
@@ -118,16 +120,19 @@ def adjust_learning_rate(optimizer, lr):
         param_group['lr'] = lr
 
 
-def lrfn(epoch):
-    if epoch < LR_RAMPUP_EPOCHS:
-        lr = (LR_MAX - LR_START) / LR_RAMPUP_EPOCHS * epoch + LR_START
-    elif epoch < LR_RAMPUP_EPOCHS + LR_SUSTAIN_EPOCHS:
-        lr = LR_MAX
+def lrfn(epoch, lr_fn_dicts):
+    if epoch < int(lr_fn_dicts['LR_RAMPUP_EPOCHS']):
+        lr = (float(lr_fn_dicts['LR_MAX']) - float(lr_fn_dicts['LR_START'])) / int(lr_fn_dicts['LR_RAMPUP_EPOCHS']) * epoch + \
+            float(lr_fn_dicts['LR_START'])
+    elif epoch < int(lr_fn_dicts['LR_RAMPUP_EPOCHS']) + int(lr_fn_dicts['LR_SUSTAIN_EPOCHS']):
+        lr = float(lr_fn_dicts['LR_MAX'])
     else:
-        lr = (LR_MAX - LR_MIN) * LR_EXP_DECAY**(epoch - LR_RAMPUP_EPOCHS - LR_SUSTAIN_EPOCHS) + LR_MIN
+        lr = (float(lr_fn_dicts['LR_MAX']) - float(lr_fn_dicts['LR_MIN'])) * \
+            float(lr_fn_dicts['LR_EXP_DECAY'])**(epoch - int(lr_fn_dicts['LR_RAMPUP_EPOCHS']) - \
+            int(lr_fn_dicts['LR_SUSTAIN_EPOCHS'])) + float(lr_fn_dicts['LR_MIN'])
     return lr
 
-    
+
 def train(train_loader, model, scheduler, optimizer, epoch, args, epoch_loss_file, iteration_loss_file, steps_pre_epoch):
     global iteration
     # print("{} epoch: \t start training....".format(epoch))
@@ -168,7 +173,7 @@ def train(train_loader, model, scheduler, optimizer, epoch, args, epoch_loss_fil
         adjust_learning_rate(optimizer, lr_now)
     elif args.lr_choice == 'lr_scheduler':
         scheduler.step(np.mean(total_loss))
-
+    
     mean_total_loss = np.mean(total_loss)
     print('time: {:.0f}'.format(time.time() - start))
     epoch_loss_file.write('{},{:1.5f}\n'.format(epoch+1, mean_total_loss))
@@ -209,6 +214,7 @@ def main_worker(gpu, ngpus_per_node, args):
     print('network:', args.network)
     print('num_epoch:', args.num_epoch)
     print('batch_size:', args.batch_size)
+    print('lr_choice:', args.lr_choice)
     print('lr:', args.lr)
     print('image_size:', args.image_size)
     print('workers:', args.workers)
@@ -303,10 +309,10 @@ def main_worker(gpu, ngpus_per_node, args):
         # print('Run with DataParallel ....')
         model = torch.nn.DataParallel(model).cuda()
 
-    if args.lr_choice == 'lr_fn':
-        lr_now = LR_START
-    elif args.lr_choice == 'lr_scheduler':
-        lr_now = args.lr
+    if parser.lr_choice == 'lr_fn':
+        lr_now = float(parser.lr_fn['LR_START'])
+    elif parser.lr_choice == 'lr_scheduler':
+        lr_now = parser.lr
 
     optimizer = optim.Adam(model.parameters(), lr=lr_now)
     # optimizer = optim.AdamW(model.parameters(), lr=args.lr)
