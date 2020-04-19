@@ -6,7 +6,19 @@ IMAGE_SIZE = 512
 NUM_EPOCH = 40
 BATCH_SIZE = 4
 WORKS = 2
-LEARNING_RATE = 1e-4
+
+# LR_CHOICE = 'lr_scheduler'
+LR = 1e-4
+PATIENCE = 3
+FACTOR = 0.1
+
+LR_CHOICE = 'lr_fn'
+LR_START = 1e-5
+LR_MAX = 1e-4
+LR_MIN = 1e-5
+LR_RAMPUP_EPOCHS = 5
+LR_SUSTAIN_EPOCHS = 0
+LR_EXP_DECAY = .8
 
 # NETWORK = 'efficientdet-d0'
 # NETWORK = 'efficientdet-d1'
@@ -75,6 +87,7 @@ parser.add_argument('--num_class', default=3, type=int, help='Number of class us
 parser.add_argument('--limit', help='limit', type=int, nargs=2, default=(0, 0))
 parser.add_argument('--device', default=[0], type=list, help='Use CUDA to train model')
 parser.add_argument('--grad_accumulation_steps', default=1, type=int, help='Number of gradient accumulation steps')
+parser.add_argument('--lr_choice', default=LR_CHOICE, choices=['lr_scheduler', 'lr_fn'], type=str)
 parser.add_argument('--lr', '--learning-rate', default=LEARNING_RATE, type=float, help='initial learning rate')
 parser.add_argument('--image_size', help='image size', type=int, default=IMAGE_SIZE)
 parser.add_argument('--momentum', default=0.9, type=float, help='Momentum value for optim')
@@ -100,6 +113,11 @@ parser.add_argument(
 iteration = 1
 
 
+def adjust_learning_rate(optimizer, lr):
+    for param_group in optimizer.param_groups:
+        param_group['lr'] = lr
+
+        
 def train(train_loader, model, scheduler, optimizer, epoch, args, epoch_loss_file, iteration_loss_file, steps_pre_epoch):
     global iteration
     # print("{} epoch: \t start training....".format(epoch))
@@ -134,7 +152,13 @@ def train(train_loader, model, scheduler, optimizer, epoch, args, epoch_loss_fil
             float(classification_loss), float(regression_loss), mean_total_loss))    
         iteration_loss_file.flush()
         iteration += 1
-    scheduler.step(np.mean(total_loss))
+    
+    if args.lr_choice == 'lr_fn':
+        lr_now = lrfn(epoch+1)
+        adjust_learning_rate(optimizer, lr_now)
+    elif args.lr_choice == 'lr_scheduler':
+        scheduler.step(np.mean(total_loss))
+
     mean_total_loss = np.mean(total_loss)
     print('time: {:.0f}'.format(time.time() - start))
     epoch_loss_file.write('{},{:1.5f}\n'.format(epoch+1, mean_total_loss))
@@ -269,9 +293,14 @@ def main_worker(gpu, ngpus_per_node, args):
         # print('Run with DataParallel ....')
         model = torch.nn.DataParallel(model).cuda()
 
-    # define loss function (criterion) , optimizer, scheduler
-    optimizer = optim.Adam(model.parameters(), lr=args.lr)
+    if args.lr_choice == 'lr_fn':
+        lr_now = LR_START
+    elif args.lr_choice == 'lr_scheduler':
+        lr_now = args.lr
+
+    optimizer = optim.Adam(model.parameters(), lr=lr_now)
     # optimizer = optim.AdamW(model.parameters(), lr=args.lr)
+
     scheduler = optim.lr_scheduler.ReduceLROnPlateau(optimizer, patience=3, factor=0.1, verbose=True)
     cudnn.benchmark = True
     
