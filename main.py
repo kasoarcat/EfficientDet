@@ -342,7 +342,8 @@ def main_worker(gpu, ngpus_per_node, args):
     if USE_KAGGLE:
         iteration_loss_path = '/kaggle/working/' + iteration_loss_path
         epoch_loss_path = '/kaggle/working/' + epoch_loss_path
-        eval_result_path = '/kaggle/working/' + eval_result_path
+        eval_val_path = '/kaggle/working/' + eval_val_path
+        eval_train_path = '/kaggle/working/' + eval_train_path
     
     with open(epoch_loss_path, 'a+') as epoch_loss_file, \
          open(iteration_loss_path, 'a+') as iteration_loss_file, \
@@ -363,8 +364,8 @@ def main_worker(gpu, ngpus_per_node, args):
             _model.is_training = False
             with torch.no_grad():
                 if parser.dataset != 'show':
-                    evaluate_coco(train_dataset, _model, args.dataset, epoch, coco_eval_file)
-                evaluate_coco(valid_dataset, _model, args.dataset, epoch, coco_eval_file)
+                    evaluate_coco(train_dataset, _model, args.dataset, epoch, eval_train_path)
+                evaluate_coco(valid_dataset, _model, args.dataset, epoch, eval_val_path)
 
 
 def main():
