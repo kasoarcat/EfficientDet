@@ -300,10 +300,10 @@ def main_worker(gpu, ngpus_per_node, args):
         # print('Run with DataParallel ....')
         model = torch.nn.DataParallel(model).cuda()
 
-    if parser.lr_choice == 'lr_fn':
-        lr_now = float(parser.lr_fn['LR_START'])
-    elif parser.lr_choice == 'lr_scheduler':
-        lr_now = parser.lr
+    if args.lr_choice == 'lr_fn':
+        lr_now = float(args.lr_fn['LR_START'])
+    elif args.lr_choice == 'lr_scheduler':
+        lr_now = args.lr
 
     optimizer = optim.Adam(model.parameters(), lr=lr_now)
     # optimizer = optim.AdamW(model.parameters(), lr=args.lr)
