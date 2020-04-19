@@ -173,20 +173,11 @@ def train(train_loader, model, scheduler, optimizer, epoch, args, epoch_loss_fil
         adjust_learning_rate(optimizer, lr_now)
     elif args.lr_choice == 'lr_scheduler':
         scheduler.step(np.mean(total_loss))
-    
+
     mean_total_loss = np.mean(total_loss)
     print('time: {:.0f}'.format(time.time() - start))
     epoch_loss_file.write('{},{:1.5f}\n'.format(epoch+1, mean_total_loss))
     epoch_loss_file.flush()
-
-
-def test(dataset, model, epoch, args, coco_eval_file):
-    # print("{} epoch: \t start validation....".format(epoch+1))
-    model = model.module
-    model.eval()
-    model.is_training = False
-    with torch.no_grad():
-        evaluate_coco(dataset, model, args.dataset, epoch, coco_eval_file)
 
 
 def main_worker(gpu, ngpus_per_node, args):
@@ -328,9 +319,13 @@ def main_worker(gpu, ngpus_per_node, args):
     if os.path.isfile(epoch_loss_path):
         os.remove(epoch_loss_path)
     
-    eval_result_path = 'eval_result.csv'
-    if os.path.isfile(eval_result_path):
-        os.remove(eval_result_path)
+    eval_train_path = 'eval_train_result.csv'
+    if os.path.isfile(eval_train_path):
+        os.remove(eval_train_path)
+
+    eval_val_path = 'eval_val_result.csv'
+    if os.path.isfile(eval_val_path):
+        os.remove(eval_val_path)
 
     USE_KAGGLE = True if os.environ.get('KAGGLE_KERNEL_RUN_TYPE', False) else False
     if USE_KAGGLE:
@@ -338,15 +333,27 @@ def main_worker(gpu, ngpus_per_node, args):
         epoch_loss_path = '/kaggle/working/' + epoch_loss_path
         eval_result_path = '/kaggle/working/' + eval_result_path
     
-    with open(epoch_loss_path, 'a+') as epoch_loss_file, open(iteration_loss_path, 'a+') as iteration_loss_file, \
-        open(eval_result_path, 'a+') as coco_eval_file:
+    with open(epoch_loss_path, 'a+') as epoch_loss_file, \
+         open(iteration_loss_path, 'a+') as iteration_loss_file, \
+         open(eval_train_path, 'a+') as eval_train_file, \
+         open(eval_val_path, 'a+') as eval_val_file:
 
         epoch_loss_file.write('epoch_num,mean_epoch_loss\n')
         iteration_loss_file.write('epoch_num,iteration,classification_loss,regression_loss,iteration_loss\n')
-        coco_eval_file.write('epoch_num,map50\n')
+        eval_train_file.write('epoch_num,map50\n')
+        eval_val_file.write('epoch_num,map50\n')
+
         for epoch in range(args.start_epoch, args.num_epoch):
             train(train_loader, model, scheduler, optimizer, epoch, args, epoch_loss_file, iteration_loss_file, steps_pre_epoch)
-            test(valid_dataset, model, epoch, args, coco_eval_file)
+
+            # test
+            _model = model.module
+            _model.eval()
+            _model.is_training = False
+            with torch.no_grad():
+                if parser.dataset != 'show':
+                    evaluate_coco(train_dataset, _model, args.dataset, epoch, coco_eval_file)
+                evaluate_coco(valid_dataset, _model, args.dataset, epoch, coco_eval_file)
 
 
 def main():
