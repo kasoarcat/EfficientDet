@@ -218,6 +218,7 @@ def main_worker(gpu, ngpus_per_node, args):
     print('batch_size:', args.batch_size)
     print('lr_choice:', args.lr_choice)
     print('lr:', args.lr)
+    print('lr_fn:', args.lr_fn)
     print('image_size:', args.image_size)
     print('workers:', args.workers)
     print('num_class:', args.num_class)
