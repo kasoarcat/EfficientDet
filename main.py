@@ -365,8 +365,8 @@ def main_worker(gpu, ngpus_per_node, args):
             _model.is_training = False
             with torch.no_grad():
                 if args.dataset != 'show':
-                    evaluate_coco(train_dataset, _model, args.dataset, epoch, eval_train_path)
-                evaluate_coco(valid_dataset, _model, args.dataset, epoch, eval_val_path)
+                    evaluate_coco(train_dataset, _model, args.dataset, epoch, eval_train_file)
+                evaluate_coco(valid_dataset, _model, args.dataset, epoch, eval_val_file)
 
 
 def main():
