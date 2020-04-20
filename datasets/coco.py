@@ -114,7 +114,7 @@ class CocoDataset(Dataset):
         annot = self.load_annotations(idx)
         sample = {'img': img, 'annot': annot}
         if self.transform:
-            sample[annot] = self.transform(**sample[annot])
+            sample[annot] = self.transform(sample[annot])
         return sample
 
     def load_image(self, image_index):
