@@ -112,9 +112,10 @@ class CocoDataset(Dataset):
     def __getitem__(self, idx):
         img = self.load_image(idx)
         annot = self.load_annotations(idx)
+        print('annot:', annot)
         sample = {'img': img, 'annot': annot}
         if self.transform:
-            sample['annot'] = self.transform(**sample['annot'])
+            sample['annot'] = self.transform(sample['annot'])
         return sample
 
     def load_image(self, image_index):
@@ -139,7 +140,6 @@ class CocoDataset(Dataset):
         # parse annotations
         coco_annotations = self.coco.loadAnns(annotations_ids)
         for idx, a in enumerate(coco_annotations):
-
             # some annotations have basically no width / height, skip them
             if a['bbox'][2] < 1 or a['bbox'][3] < 1:
                 continue
