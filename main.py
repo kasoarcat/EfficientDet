@@ -37,7 +37,7 @@ if platform.system() == 'Linux':
     import shutil
 
     def install(package):
-        subprocess.check_call([sys.executable, "-m", "pip", "-U", "install", package])
+        subprocess.check_call([sys.executable, "-m", "pip", "install", "-U", package])
     install('install/pycocotools-2.0-cp36-cp36m-linux_x86_64.whl')
     install('install/pytoan-0.6.4-py3-none-any.whl')
     install('install/imgaug-0.2.6-py3-none-any.whl')
