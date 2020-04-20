@@ -111,11 +111,25 @@ class CocoDataset(Dataset):
 
     def __getitem__(self, idx):
         img = self.load_image(idx)
-        annot = self.load_annotations(idx)
-        print('annot:', annot)
-        sample = {'img': img, 'annot': annot}
+        # annot = self.load_annotations(idx)
+        # sample = {'img': img, 'annot': annot}
+
+        # get ground truth annotations
+        annotations_ids = self.coco.getAnnIds(imgIds=self.image_ids[idx], iscrowd=False)
+        coco_annotations = self.coco.loadAnns(annotations_ids)
+        sample = {'bboxes': [], 'category_id': []}
+        sample['image'] = img
+        for idx, a in enumerate(coco_annotations):
+        	sample['bboxes'].append(a['bbox'])
+        	sample['category_id'].append(a['category_id'])
+
+        # print('image.shape', sample['image'].shape)
+        # print('bboxes:', sample['bboxes'])
+        # print('category_id:', sample['category_id'])
+
         if self.transform:
-            sample['annot'] = self.transform(**sample['annot'])
+            sample = self.transform(**sample)
+
         return sample
 
     def load_image(self, image_index):
@@ -139,11 +153,12 @@ class CocoDataset(Dataset):
 
         # parse annotations
         coco_annotations = self.coco.loadAnns(annotations_ids)
+        # print('coco_annotations:', coco_annotations)
+
         for idx, a in enumerate(coco_annotations):
             # some annotations have basically no width / height, skip them
             if a['bbox'][2] < 1 or a['bbox'][3] < 1:
                 continue
-
             annotation = np.zeros((1, 5))
             annotation[0, :4] = a['bbox']
             annotation[0, 4] = self.coco_label_to_label(a['category_id'])
@@ -166,7 +181,7 @@ class CocoDataset(Dataset):
 
 if __name__ == '__main__':
     from augmentation import get_augumentation
-    dataset = CocoDataset(root_dir='/root/data/coco', set_name='trainval35k',
+    dataset = CocoDataset(root_dir='D:\\show', set_name='train_small',
                           transform=get_augumentation(phase='train'))
     sample = dataset[0]
     print('sample: ', sample)

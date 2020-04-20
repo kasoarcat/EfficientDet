@@ -246,13 +246,13 @@ def main_worker(gpu, ngpus_per_node, args):
                               batch_size=args.batch_size,
                               num_workers=args.workers,
                               shuffle=True,
-                              collate_fn=collater,
+                              collate_fn=detection_collate,
                               pin_memory=True)
     valid_loader = DataLoader(valid_dataset,
                               batch_size=1,
                               num_workers=args.workers,
                               shuffle=False,
-                              collate_fn=collater,
+                              collate_fn=detection_collate,
                               pin_memory=True)
 
     checkpoint = []

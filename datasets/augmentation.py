@@ -37,7 +37,7 @@ def get_augumentation(phase, width=512, height=512, min_area=0., min_visibility=
     ])
     if(phase == 'test'):
         return albu.Compose(list_transforms)
-    return albu.Compose(list_transforms, bbox_params=albu.BboxParams(format='pascal_voc', min_area=min_area,
+    return albu.Compose(list_transforms, bbox_params=albu.BboxParams(format='coco', min_area=min_area,
                                                                      min_visibility=min_visibility, label_fields=['category_id']))
 
 
@@ -57,6 +57,7 @@ def detection_collate(batch):
     return (torch.stack(imgs, 0), torch.FloatTensor(annot_padded))
 
 def collater(data):
+    print('collater')
     imgs = [s['img'] for s in data]
     annots = [s['annot'] for s in data]
     scales = [s['scale'] for s in data]
