@@ -37,7 +37,7 @@ def get_augumentation(phase, width=512, height=512, min_area=0., min_visibility=
     ])
     if(phase == 'test'):
         return albu.Compose(list_transforms)
-    return albu.Compose(list_transforms, bbox_params=albu.BboxParams(format='coco', min_area=min_area,
+    return albu.Compose(list_transforms, bbox_params=albu.BboxParams(format='pascal_voc', min_area=min_area,
                                                                      min_visibility=min_visibility, label_fields=['category_id']))
 
 
