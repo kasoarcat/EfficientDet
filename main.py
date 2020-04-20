@@ -38,7 +38,7 @@ if platform.system() == 'Linux':
 
     def install(package):
         subprocess.check_call([sys.executable, "-m", "pip", "install", package])
-    
+
     install('install/pycocotools-2.0-cp36-cp36m-linux_x86_64.whl')
     install('install/pytoan-0.6.4-py3-none-any.whl')
     install('install/imgaug-0.2.6-py3-none-any.whl')
@@ -87,8 +87,8 @@ class StoreDictKeyPair(argparse.Action):
             k,v = kv.split("=")
             my_dict[k] = v
         setattr(namespace, self.dest, my_dict)
-
-
+                                                                                                                       
+                                                                                                                       
 parser = argparse.ArgumentParser(description='PyTorch ImageNet Training')
 parser.add_argument('--dataset', default='show', choices=['limit', 'h5', 'show'], type=str, help='limit, h5, show')
 parser.add_argument('--dataset_root', default='/mnt/marathon', help='Dataset root directory path')
