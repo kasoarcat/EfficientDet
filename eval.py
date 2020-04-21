@@ -266,21 +266,23 @@ def evaluate_coco(dataset, model, _type, epoch, eval_file, threshold=0.05):
 
         for index in range(len(dataset)):
             data = dataset[index]
-            scale = data['scale']
+            # scale = data['scale']
 
             # run network
-            scores, labels, boxes = model(data['img'].permute(2, 0, 1).cuda().float().unsqueeze(dim=0))
+            # scores, labels, boxes = model(data['img'].permute(2, 0, 1).cuda().float().unsqueeze(dim=0))
+            scores, labels, boxes = model(data['image'].cuda().float().unsqueeze(dim=0))
+
             scores = scores.cpu()
             labels = labels.cpu()
             boxes = boxes.cpu()
 
             # correct boxes for image scale
-            boxes /= scale
+            # boxes /= scale
 
             if boxes.shape[0] > 0:
-                # change to (x, y, w, h) (MS COCO standard)
-                boxes[:, 2] -= boxes[:, 0]
-                boxes[:, 3] -= boxes[:, 1]
+                # # change to (x, y, w, h) (MS COCO standard)
+                # boxes[:, 2] -= boxes[:, 0]
+                # boxes[:, 3] -= boxes[:, 1]
 
                 # compute predicted labels and scores
                 # for box, score, label in zip(boxes[0], scores[0], labels[0]):
@@ -288,7 +290,8 @@ def evaluate_coco(dataset, model, _type, epoch, eval_file, threshold=0.05):
                     score = float(scores[box_id])
                     label = int(labels[box_id])
                     box = boxes[box_id, :]
-
+                    # print('label:', label)
+                    
                     # scores are sorted, so we can break
                     if score < threshold:
                         break

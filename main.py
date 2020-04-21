@@ -38,7 +38,6 @@ if platform.system() == 'Linux':
 
     def install(package):
         subprocess.check_call([sys.executable, "-m", "pip", "install", "-U", package])
-        
     install('install/pycocotools-2.0-cp36-cp36m-linux_x86_64.whl')
     install('install/pytoan-0.6.4-py3-none-any.whl')
     install('install/imgaug-0.2.6-py3-none-any.whl')
@@ -155,7 +154,10 @@ def train(train_loader, model, scheduler, optimizer, epoch, args, epoch_loss_fil
     model.module.freeze_bn()
     optimizer.zero_grad()
     for idx, (images, annotations) in enumerate(train_loader):
+        # print('idx:', idx)
         # print('images.shape:', images.shape)
+        # print('annotations:', annotations)
+
         images = images.cuda().float()
         annotations = annotations.cuda()
         classification_loss, regression_loss = model([images, annotations])
@@ -235,7 +237,9 @@ def main_worker(gpu, ngpus_per_node, args):
                                 transform=get_augumentation('train'),
                                 limit_len=args.limit[0])
         valid_dataset = CocoDataset(args.dataset_root, set_name='test',
-                              transform=transforms.Compose([Normalizer(), Resizer(args.image_size)]), limit_len=args.limit[1])
+                              # transform=transforms.Compose([Normalizer(), Resizer(args.image_size)]),
+                              transform=get_augumentation('test'),
+                              limit_len=args.limit[1])
 
     print('train_dataset:', len(train_dataset))
     print('valid_dataset:', len(valid_dataset))
