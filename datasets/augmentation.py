@@ -46,9 +46,9 @@ def detection_collate(batch):
     imgs = [s['image'] for s in batch]
     annots = [s['bboxes'] for s in batch]
     labels = [s['category_id'] for s in batch]
-    print('imgs:', len(imgs))
-    print('annots:', len(annots))
-    print('labels:', len(labels))
+    # print('imgs:', len(imgs))
+    # print('annots:', len(annots))
+    # print('labels:', len(labels))
 
     max_num_annots = max(len(annot) for annot in annots)
     annot_padded = np.ones((len(annots), max_num_annots, 5)) * -1
