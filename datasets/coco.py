@@ -143,9 +143,7 @@ class CocoDataset(Dataset):
 
     def load_image(self, image_index):
         image_info = self.coco.loadImgs(self.image_ids[image_index])[0]
-        # path = os.path.join(self.root_dir, 'images', self.set_name, image_info['file_name'])
         path = os.path.join(self.root_dir, self.set_name, 'images', image_info['file_name'])
-        # print('path:[%s]' % (path))
         img = cv2.imread(path)
         if len(img.shape) == 2:
             img = cv2.cvtColor(img, cv2.COLOR_GRAY2RGB)
@@ -186,6 +184,7 @@ class CocoDataset(Dataset):
     def image_aspect_ratio(self, image_index):
         image = self.coco.loadImgs(self.image_ids[image_index])[0]
         return float(image['width']) / float(image['height'])
+
 
 if __name__ == '__main__':
     from augmentation import get_augumentation
